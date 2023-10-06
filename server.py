@@ -1,7 +1,4 @@
-import socket
-import logger
-import threading
-
+# server.py
 '''
     Server follows the following sequence while opening up connections.
 
@@ -11,8 +8,15 @@ import threading
     - accept() - accepts a connection and then sends communication over network.
 '''
 
+
+import socket
+import logger
+import threading
+
+
 HOST = ''
 PORT = 3874
+
 
 class Server:
     def __init__(self):
@@ -20,6 +24,10 @@ class Server:
         self.logger = logger.Logger().logger
     
     def process_client_connection(self, connection, address):
+        """
+            thread executes this method when a connection is made to process
+            connection to the user.
+        """
         try:
             self.logger.info("Connection starting thread number: %s" %threading.current_thread().ident)
             while True:
@@ -35,6 +43,10 @@ class Server:
             connection.close()
 
     def run_server_forever(self, hostname, port, backlog_connections_allowed):
+        """
+           runs forever to accept multiple connections.
+           spawns new thread on successful connection.
+        """
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.bind((hostname, port))
             sock.listen(backlog_connections_allowed)
@@ -49,6 +61,7 @@ class Server:
                 self.logger.info('Shutting down server...')
                 sock.close()
         self.logger.info('Connection closed.')
+
 
 if __name__=='__main__':
     server = Server()

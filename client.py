@@ -1,6 +1,4 @@
-import socket
-import logger
-
+# client.py
 '''
     Client follows the following sequence.
 
@@ -9,12 +7,16 @@ import logger
     - send / recv - based on what needs to be communicated.
 '''
 
+
+import socket
+import logger
+
+
 HOST = ''
 PORT = 3874
 
-class Client:
-    server_address = None
 
+class Client:
     def __init__(self):
         self.logger = logger.Logger().logger
 
@@ -36,6 +38,7 @@ class Client:
             sock.close()
             self.logger.info("Shutting down")
         self.logger.info("Connection closed")
+
 
 if __name__=='__main__':
     client = Client()
