@@ -1,5 +1,6 @@
 import socket
-import time
+import logger
+import threading
 
 '''
     Server follows the following sequence while opening up connections.
@@ -14,7 +15,24 @@ HOST = ''
 PORT = 3874
 
 class Server:
-    connections = []
+    def __init__(self):
+        self.connections = []
+        self.logger = logger.Logger().logger
+    
+    def process_client_connection(self, connection, address):
+        try:
+            self.logger.info("Connection starting thread number: %s" %threading.current_thread().ident)
+            while True:
+                data = connection.recv(1024)
+                if not data: break
+                self.logger.info('%s Value received: %s'%(address, data.decode('utf-8')))
+                connection.send('OK'.encode())
+        except KeyboardInterrupt:
+            self.logger.info("Connection closing %s" %threading.current_thread().ident)
+            connection.close()
+        finally:
+            self.logger.info("Connection closing %s" %threading.current_thread().ident)
+            connection.close()
 
     def run_server_forever(self, hostname, port, backlog_connections_allowed):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -23,18 +41,15 @@ class Server:
             try:
                 while True:
                     conn, addr = sock.accept()
-                    with conn:
-                        print("Connection made", addr)
-                        while True:
-                            data = conn.recv(1024)
-                            if not data: break
-                            print("Value received", data)
-                            conn.send(b'OK')
+                    self.logger.info("Connection made -> %s",addr)
+                    thread_executor = threading.Thread(target=self.process_client_connection, args=(conn, addr), daemon=True)
+                    thread_executor.start()
+                    
             except KeyboardInterrupt:
-                print('Shutting down server...')
-                time.sleep(3)
-        print('Connection closed.')
+                self.logger.info('Shutting down server...')
+                sock.close()
+        self.logger.info('Connection closed.')
 
 if __name__=='__main__':
     server = Server()
-    server.run_server_forever(HOST, PORT, 5)
+    server.run_server_forever(HOST, PORT, 1)
