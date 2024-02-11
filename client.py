@@ -30,12 +30,9 @@ class Client:
                     input_string = input("> ")
                 data = sock.recv(1024)
                 self.logger.info('received from server %s' %repr(data.decode('utf-8')))
-            sock.close()
         except BrokenPipeError:
-            sock.close()
             self.logger.info("Connection to server broken, shutting down client")
         except KeyboardInterrupt:
-            sock.close()
             self.logger.info("Shutting down")
         self.logger.info("Connection closed")
 
