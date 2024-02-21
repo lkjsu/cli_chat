@@ -14,7 +14,7 @@ import logger
 import threading
 
 
-HOST = ''
+HOST = '0.0.0.0'
 PORT = 3874
 
 
@@ -61,3 +61,7 @@ class Server:
                 self.logger.info('Shutting down server...')
                 sock.close()
         self.logger.info('Connection closed.')
+
+if __name__ == '__main__':
+    server = Server()
+    server.run_server_forever(HOST, PORT, 1)

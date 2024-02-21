@@ -1,17 +1,13 @@
 import unittest
 import docker
 import server
+import tarfile
+import os.path
 
 
+PATH = '/Users/kish/chatApp'
 class TestServer(unittest.TestCase):
-
-    def setUp(self):
-        self.client = docker.from_env()
-
-    def testSocketGenerated(self):
-        # main_server = server.Server()
-        # main_server.run_server_forever(server.HOST, server.PORT, 1)
-
+    # tests
 
 if __name__=='__main__':
     unittest.main()

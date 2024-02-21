@@ -25,9 +25,12 @@ class Client:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 sock.connect((hostname, port))
                 input_string = input("> ")
-                while input_string != "exit":
-                    sock.send(input_string.encode())
-                    input_string = input("> ")
+                try:
+                    while input_string not in ["exit", "quit", "q"]:
+                        sock.send(input_string.encode())
+                        input_string = input("> ")
+                except KeyboardInterrupt:
+                    self.logger.info("Shutting down")
                 data = sock.recv(1024)
                 self.logger.info('received from server %s' %repr(data.decode('utf-8')))
         except BrokenPipeError:
