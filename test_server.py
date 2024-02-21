@@ -5,7 +5,6 @@ import tarfile
 import os.path
 
 
-PATH = '/Users/kish/chatApp'
 class TestServer(unittest.TestCase):
     # tests
 
