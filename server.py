@@ -25,8 +25,7 @@ class Server:
     
     def process_client_connection(self, connection, address):
         """
-            thread executes this method when a connection is made to process
-            connection to the user.
+            process connection to the user.
         """
         try:
             self.logger.info("Connection starting thread number: %s" %threading.current_thread().ident)
