@@ -31,14 +31,14 @@ class Server:
             self.logger.info("Connection starting thread number: %s" %threading.current_thread().ident)
             while True:
                 data = connection.recv(1024)
-                if not data: break
+                if not data or data.decode('utf-8') in ["exit", "quit", "q"]: break
                 self.logger.info('%s Value received: %s'%(address, data.decode('utf-8')))
-                connection.send('OK'.encode())
+            connection.send("OK".encode())
         except KeyboardInterrupt:
             self.logger.info("Connection closing %s" %threading.current_thread().ident)
             connection.close()
         finally:
-            self.logger.info("Connection closing %s" %threading.current_thread().ident)
+            self.logger.info("Connection closing finally %s" %threading.current_thread().ident)
             connection.close()
 
     def run_server_forever(self, hostname, port, backlog_connections_allowed):

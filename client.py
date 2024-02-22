@@ -21,22 +21,28 @@ class Client:
         self.logger = logger.Logger().logger
 
     def start_client(self, hostname, port):
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                sock.connect((hostname, port))
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect((hostname, port))
+            try:
                 input_string = input("> ")
-                try:
-                    while input_string not in ["exit", "quit", "q"]:
+                while True:
+                    if input_string not in ["exit", "quit", "q"]:
                         sock.send(input_string.encode())
-                        input_string = input("> ")
-                except KeyboardInterrupt:
-                    self.logger.info("Shutting down")
+                    else:
+                        sock.send(input_string.encode())
+                        break
+                    input_string = input("> ")
                 data = sock.recv(1024)
                 self.logger.info('received from server %s' %repr(data.decode('utf-8')))
-        except BrokenPipeError:
-            self.logger.info("Connection to server broken, shutting down client")
-        except KeyboardInterrupt:
-            self.logger.info("Shutting down")
+            except KeyboardInterrupt:
+                self.logger.info("Shutting down client")
+                sock.send("q".encode())
+                data = sock.recv(1024)
+                self.logger.info('received from server %s' %repr(data.decode('utf-8')))
+                sock.close()
+            except BrokenPipeError:
+                self.logger.info("Connection to server broken, shutting down client")
+                sock.close()
         self.logger.info("Connection closed")
 
 
