@@ -61,6 +61,7 @@ class Server:
                 sock.close()
         self.logger.info('Connection closed.')
 
+
 if __name__ == '__main__':
     server = Server()
     server.run_server_forever(HOST, PORT, 1)

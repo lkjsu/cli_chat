@@ -5,3 +5,6 @@ class User:
         self.chats = []
         self.friends = friends
         self.name = name
+    
+    def check_credentials(name, pin):
+        #pass
