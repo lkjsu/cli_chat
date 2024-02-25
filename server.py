@@ -22,23 +22,34 @@ class Server:
     def __init__(self):
         self.connections = []
         self.logger = logger.Logger().logger
+        self.connections = {}
+
+    def generate_string_address(self, addr):
+        return addr[0]+':'+str(addr[1])
     
     def process_client_connection(self, connection, address):
         """
             process connection to the user.
         """
         try:
+            string_address = self.generate_string_address(address)
             self.logger.info("Connection starting thread number: %s" %threading.current_thread().ident)
             while True:
                 data = connection.recv(1024)
                 if not data or data.decode('utf-8') in ["exit", "quit", "q"]: break
-                self.logger.info('%s Value received: %s'%(address, data.decode('utf-8')))
-            connection.send("OK".encode())
+                # self.logger.info('%s Value received: %s'%(address, data.decode('utf-8')))
+                self.logger.info("Connections: %s"%self.connections)
+                for conn in self.connections:
+                    if conn != string_address:
+                        self.connections[conn].send(data)
+            # connection.send("OK".encode())
         except KeyboardInterrupt:
             self.logger.info("Connection closing %s" %threading.current_thread().ident)
+            self.connections.pop(string_address, None)
             connection.close()
         finally:
             self.logger.info("Connection closing finally %s" %threading.current_thread().ident)
+            self.connections.pop(string_address, None)
             connection.close()
 
     def run_server_forever(self, hostname, port, backlog_connections_allowed):
@@ -54,6 +65,8 @@ class Server:
                     conn, addr = sock.accept()
                     self.logger.info("Connection made -> %s",addr)
                     thread_executor = threading.Thread(target=self.process_client_connection, args=(conn, addr), daemon=True)
+                    self.connections[self.generate_string_address(addr)] = conn
+                    self.logger.info(self.connections)
                     thread_executor.start()
                     
             except KeyboardInterrupt:

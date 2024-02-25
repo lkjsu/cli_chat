@@ -1,12 +1,12 @@
 import unittest
-import docker
-import server
-import tarfile
-import os.path
+from client import Client
 
 
 class TestServer(unittest.TestCase):
-    # tests
+    def setUp(self):
+        self.host = '0.0.0.0'
+        self.port = 3874
+        self.client = Client()
 
 
 if __name__=='__main__':
