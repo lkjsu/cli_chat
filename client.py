@@ -27,6 +27,7 @@ class Client:
         pass
 
     def receive_message(self, sock):
+        """Receive messages indefinitely."""
         while True:
             data = sock.recv(1024)
             if data:

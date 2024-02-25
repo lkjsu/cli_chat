@@ -25,6 +25,7 @@ class Server:
         self.connections = {}
 
     def generate_string_address(self, addr):
+        """returns a string identifier for the address passed."""
         return addr[0]+':'+str(addr[1])
     
     def process_client_connection(self, connection, address):
@@ -37,12 +38,10 @@ class Server:
             while True:
                 data = connection.recv(1024)
                 if not data or data.decode('utf-8') in ["exit", "quit", "q"]: break
-                # self.logger.info('%s Value received: %s'%(address, data.decode('utf-8')))
                 self.logger.info("Connections: %s"%self.connections)
                 for conn in self.connections:
                     if conn != string_address:
                         self.connections[conn].send(data)
-            # connection.send("OK".encode())
         except KeyboardInterrupt:
             self.logger.info("Connection closing %s" %threading.current_thread().ident)
             self.connections.pop(string_address, None)
