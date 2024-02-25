@@ -1,7 +1,8 @@
 # cli_chat
 
 Clone the repo
-```git clone https://github.com/lkjsu/cli_chat.git
+```
+git clone https://github.com/lkjsu/cli_chat.git
 ```
 #### To run dockerized server
 ```
