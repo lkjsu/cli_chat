@@ -2,7 +2,6 @@ import curses
 import logger
 import socket
 import threading
-import errno
 
 
 HOST = '0.0.0.0'
@@ -30,28 +29,6 @@ class TerminalApp:
 
         self.create_client(HOST, PORT)
 
-    def run(self):
-        try:
-            while True:
-                # Get user input
-                user_input = self.get_input()
-                if user_input in ["q", "quit", "exit"]:
-                    break
-
-                # Display the entered command in the output area
-                self.output_win.addstr(f">>> {user_input}\n", self.bg_color)
-                self.output_win.refresh()
-
-                # Execute the command
-                result = self.run_command(user_input)
-
-                # Display the result in the output area
-                self.output_win.addstr(f"{result}\n", self.bg_color)
-                self.output_win.refresh()
-
-        except KeyboardInterrupt:
-            self.logger.info("Shutting down client.")
-
     def get_input(self):
         # Allow the user to enter input
         curses.echo()
@@ -72,23 +49,19 @@ class TerminalApp:
 
     def send_message(self, sock):
         # write code for sending message here.
-        try:
-            while True:
-                input_string = self.get_input()
+        while True:
+            input_string = self.get_input()
+            self.output_win.refresh()
+            self.input_win.refresh()
+            if input_string in ["exit", "quit", "q"]:
+                break
+            else:
+                sock.send(input_string.encode())
+                self.output_win.addstr("\n" + input_string + "\n")
                 self.output_win.refresh()
                 self.input_win.refresh()
-                if input_string in ["exit", "quit", "q"]:
-                    sock.send("q".encode())
-                    self.close = True
-                    break
-                else:
-                    sock.send(input_string.encode())
-                    self.output_win.addstr("\n" + input_string + "\n")
-                    self.output_win.refresh()
-                    self.input_win.refresh()
-
-        except KeyboardInterrupt:
-            self.logger.info("Shutting down client thrown inside thread.")
+        sock.send("q".encode())
+        self.close = True
 
     def create_client(self, hostname, port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -99,7 +72,7 @@ class TerminalApp:
                 while True:
                     data = sock.recv(1024)
                     if self.close:
-                        self.logger.info("Received from server: %s"%data.decode('utf-8'))
+                        self.logger.info("Closing client, server responded with: %s"%data.decode('utf-8'))
                         break
                     if data:
                         self.output_win.addstr("\n    %s\n"%data.decode())
@@ -110,7 +83,7 @@ class TerminalApp:
                 self.logger.info("Shutting down client")
                 sock.send("q".encode())
                 data = sock.recv(1024)
-                self.logger.info('received from server when a KeyboardException is thrown: %s' %data.decode('utf-8'))
+                self.logger.info('received from server: %s' %data.decode('utf-8'))
             except BrokenPipeError:
                 self.logger.info("Connection to server broken, shutting down client")
 

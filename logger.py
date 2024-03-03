@@ -19,8 +19,12 @@ class Logger:
         console_handler.setLevel(logging.INFO)  # Set the desired log level for the console output
         console_handler.setFormatter(formatter)
 
+        try:
+            os.makedirs("/tmp/chatApp/logs")
+        except FileExistsError:
+            pass
         # Create a handler for writing log messages to a file
-        current_pid_file = "logs/" + str(os.getpid()) + ".log"
+        current_pid_file = "/tmp/chatApp/logs/" + str(os.getpid()) + ".log"
         file_handler = logging.FileHandler(current_pid_file)
         file_handler.setLevel(logging.DEBUG)  # Set the desired log level for the file output
         file_handler.setFormatter(formatter)
