@@ -37,7 +37,9 @@ class Server:
             self.logger.info("Connection starting thread number: %s" %threading.current_thread().ident)
             while True:
                 data = connection.recv(1024)
-                if not data or data.decode('utf-8') in ["exit", "quit", "q"]: break
+                if data.decode('utf-8') in ["exit", "quit", "q"]:
+                    connection.send("OK".encode())
+                    break
                 self.logger.info("Connections: %s"%self.connections)
                 for conn in self.connections:
                     if conn != string_address:
