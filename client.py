@@ -48,6 +48,7 @@ class Client:
         pass
 
     def start_client(self, hostname, port):
+        """Creates a socket to communicate with the server."""
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect((hostname, port))
             send_thread = threading.Thread(target=self.send_message, args=((sock,)), daemon=True)
